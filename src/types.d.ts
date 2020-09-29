@@ -9,7 +9,11 @@ interface CreepMemory {
 
 interface RoomMemory {
   resources: Id<Source>[];
-  creeps: Id<Source>[];
+  creeps: Id<Creep>[];
+}
+
+interface SpawnMemory {
+  harvesterIndex: number;
 }
 
 interface Memory {

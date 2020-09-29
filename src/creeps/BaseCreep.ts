@@ -15,7 +15,7 @@ export class BaseCreep {
         this.mRoomManager = roomManager
     }
 
-    operate() {
+    public operate() {
 
     }
 

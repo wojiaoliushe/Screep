@@ -3,6 +3,7 @@ import { BaseCreep } from "./BaseCreep";
 
 export class Harvester extends BaseCreep {
 
+    public static BODY_PART = [WORK, CARRY, MOVE]
 
     constructor(creep: Creep, roomManager: RoomManager) {
         super(creep, roomManager)
@@ -26,6 +27,7 @@ export class Harvester extends BaseCreep {
     }
 
     harvest() {
+        this.mCreep.say("harvest")
         if(this.mCreep.store.getFreeCapacity() > 0) {
             this.goMine()
         } else {
