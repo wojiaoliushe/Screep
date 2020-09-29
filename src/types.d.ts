@@ -7,6 +7,11 @@ interface CreepMemory {
   working: boolean;
 }
 
+interface RoomMemory {
+  resources: Id<Source>[];
+  creeps: Id<Source>[];
+}
+
 interface Memory {
   uuid: number;
   log: any;
