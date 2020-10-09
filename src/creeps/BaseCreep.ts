@@ -5,7 +5,7 @@ export class BaseCreep {
     protected mCreep: Creep
     protected mRoomManager: RoomManager
 
-    // 1,work
+    // 0, free, 1,work
     protected mStatus: number = 0
 
     protected static STATUS_WORK = 1
