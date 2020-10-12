@@ -3,7 +3,7 @@ import { BaseCreep } from "./BaseCreep";
 
 export class Harvester extends BaseCreep {
 
-    public static BODY_PART = [WORK, CARRY, MOVE]
+    public static BODY_PART = [WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE];
 
     constructor(creep: Creep, roomManager: RoomManager) {
         super(creep, roomManager)
@@ -54,5 +54,13 @@ export class Harvester extends BaseCreep {
                 this.mCreep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
             }
         }
+    }
+
+    public static isHarvester(name: String): boolean {
+        return name.startsWith("Harvester")
+    }
+
+    public static getBodyPart(extensionCount: number): BodyPartConstant[] {
+        return Harvester.BODY_PART.slice(0, extensionCount+3);
     }
 }

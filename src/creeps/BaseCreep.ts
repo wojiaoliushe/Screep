@@ -1,6 +1,6 @@
 import { RoomManager } from "../managers/RoomManager";
 
-export class BaseCreep {
+export abstract class BaseCreep {
 
     protected mCreep: Creep
     protected mRoomManager: RoomManager

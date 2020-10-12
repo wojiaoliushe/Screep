@@ -80,21 +80,14 @@ export class RoomManager {
         // })
         // this.mRoom.memory.creeps = creepList
 
-        this.initHarvester(creeps)
-    }
-
-    private initHarvester(creeps: Creep[]) {
         creeps.forEach((creep) => {
-            let isHarvester = false
-            creep.body.forEach((part) => {
-                if (part.type == WORK) {
-                    isHarvester = true
-                }
-            })
-            let harvester = new Harvester(creep, this)
-            this.mHarvester.push(harvester)
-            this.mBaseCreeps.push(harvester)
+            if (Harvester.isHarvester(creep.name)) {
+                let harvester = new Harvester(creep, this)
+                this.mHarvester.push(harvester)
+                this.mBaseCreeps.push(harvester)
+            }
         })
+
     }
 
     public operate() {
