@@ -1,66 +1,74 @@
 import { RoomManager } from "../managers/RoomManager";
 import { BaseCreep } from "./BaseCreep";
+import { MSource } from "../source/MSource";
+import { MSpawn } from "../structures/MSpawn";
 
 export class Harvester extends BaseCreep {
 
     public static BODY_PART = [WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE];
 
+    private mWorkTarget: MSource | undefined;
+
     constructor(creep: Creep, roomManager: RoomManager) {
-        super(creep, roomManager)
+        super(creep, roomManager);
     }
 
-    // operate() {
-    //     if (this.mStatus == BaseCreep.STATUS_WORK) {
-    //         this.harvest()
-    //     }
-    // }
-
     operate() {
-        super.operate()
+        super.operate();
         if (this.mStatus == BaseCreep.STATUS_WORK) {
-            this.harvest()
+            this.work();
         }
     }
 
-    setStatusWork() {
-        this.mStatus = BaseCreep.STATUS_WORK
+    setWorkSource(source: MSource) {
+        this.mWorkTarget = source;
     }
 
-    harvest() {
-        this.mCreep.say("harvest")
-        if(this.mCreep.store.getFreeCapacity() > 0) {
-            this.goMine()
+    setStatusWork() {
+        this.mStatus = BaseCreep.STATUS_WORK;
+    }
+
+    work() {
+        this.mCreep.say("harvest");
+        if (this.mCreep.store.getFreeCapacity() > 0) {
+            this.goMine();
         } else {
-            this.backToStorage()
+            this.backToStorage();
         }
     }
 
     private goMine() {
-        let sources = this.mCreep.room.find(FIND_SOURCES);
-        if(this.mCreep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
-            this.mCreep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+        if (!this.mWorkTarget) {
+            return;
         }
+        let source: Source = this.mWorkTarget.getSource();
+        this.harvest(source)
     }
 
     private backToStorage() {
-        let targets = this.mCreep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
-                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+        if (!this.mWorkTarget) {
+            return;
+        }
+        let container = this.mWorkTarget.getMContainer()?.getContainer();
+        if (!container) { //没有container就送到spawn
+            let targets = this.mRoomManager.getMSpawn();
+            for (let target of targets) {
+                let capacity = target.getFreeCapacity();
+                if (capacity != null && capacity > 0) {
+                    this.transfer(target.getSpawn(), RESOURCE_ENERGY)
+                    break;
+                }
             }
-        });
-        if(targets.length > 0) {
-            if(this.mCreep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                this.mCreep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
-            }
+        } else {  //有container就送到container
+            this.transfer(container, RESOURCE_ENERGY)
         }
     }
 
     public static isHarvester(name: String): boolean {
-        return name.startsWith("Harvester")
+        return name.startsWith("Harvester");
     }
 
     public static getBodyPart(extensionCount: number): BodyPartConstant[] {
-        return Harvester.BODY_PART.slice(0, extensionCount+3);
+        return Harvester.BODY_PART.slice(0, extensionCount + 3);
     }
 }
