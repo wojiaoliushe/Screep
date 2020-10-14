@@ -2,7 +2,7 @@ import { RoomManager } from "../managers/RoomManager";
 
 export abstract class BaseCreep {
 
-    protected mCreep: Creep;
+    private mCreep: Creep;
     protected mRoomManager: RoomManager;
 
     // 0, free, 1,work
@@ -18,6 +18,10 @@ export abstract class BaseCreep {
 
     public operate() {
 
+    }
+
+    protected say(msg: string) {
+        this.mCreep.say(msg)
     }
 
     protected transfer(target: AnyCreep | Structure, resourceType: ResourceConstant, amount?: number) {
@@ -36,5 +40,9 @@ export abstract class BaseCreep {
         if (this.mCreep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE) {
             this.mCreep.moveTo(target, { visualizePathStyle: { stroke: "#ffaaaa" } });
         }
+    }
+
+    protected getFreeCapacity() {
+        return this.mCreep.store.getFreeCapacity()
     }
 }

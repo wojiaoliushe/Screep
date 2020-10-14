@@ -1,10 +1,13 @@
 import { BaseStructure } from "./BaseStructure";
 import { Harvester } from "../creeps/Harvester";
-import { Consumer } from "../interface/Consumer";
+import { IConsumer } from "../interface/IConsumer";
+import { IEnergyConsumer } from "../interface/IEnergyConsumer";
 
-export class MSpawn extends BaseStructure implements Consumer {
+export class MSpawn extends BaseStructure implements IEnergyConsumer {
 
     private mSpawn: StructureSpawn;
+
+    priority = 1
 
     constructor(spawn: StructureSpawn) {
         super();
@@ -23,10 +26,6 @@ export class MSpawn extends BaseStructure implements Consumer {
         }
     }
 
-    getConsumer(): any {
-        return this;
-    }
-
     getFreeCapacity(): number | null {
         return this.mSpawn.store.getFreeCapacity();
     }
@@ -34,4 +33,9 @@ export class MSpawn extends BaseStructure implements Consumer {
     getSpawn() {
         return this.mSpawn;
     }
+
+    getEnergyNeedCount(): any {
+        return this.getFreeCapacity()
+    }
+
 }

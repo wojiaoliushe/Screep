@@ -1,13 +1,12 @@
 import { MContainer } from "../structures/MContainer";
-import { Supplier } from "../interface/Supplier";
-import { EnergySupplier } from "../interface/EnergySupplier";
+import { ISupplier } from "../interface/ISupplier";
+import { IEnergySupplier } from "../interface/IEnergySupplier";
 
-export class MSource extends EnergySupplier{
+export class MSource implements IEnergySupplier{
     private mSource: Source;
     private mContainer: MContainer | undefined;
 
     constructor(source: Source) {
-        super();
         this.mSource = source;
     }
 
@@ -27,9 +26,9 @@ export class MSource extends EnergySupplier{
         return this.mSource;
     }
 
-    getEnergySupplyCount(): any {
+    getEnergyReadyCount(): any {
         if (this.isHasContainer() && this.getMContainer()?.getContainer) {
-            return this.getMContainer()!!.getContainer().store[RESOURCE_ENERGY]
+            return this.getMContainer()!!.getStore(RESOURCE_ENERGY)
         }
         return 0
     }

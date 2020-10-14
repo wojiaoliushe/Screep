@@ -11,4 +11,8 @@ export class MContainer extends BaseStructure{
     public getContainer() {
         return this.mContainer
     }
+
+    public getStore(type: ResourceConstant) {
+        return this.mContainer.store[type]
+    }
 }

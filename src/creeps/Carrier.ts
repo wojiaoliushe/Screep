@@ -2,16 +2,16 @@ import { BaseCreep } from "./BaseCreep";
 import { RoomManager } from "../managers/RoomManager";
 import { MSource } from "../source/MSource";
 import construct = Reflect.construct;
-import { Supplier } from "../interface/Supplier";
-import { Consumer } from "../interface/Consumer";
-import { EnergySupplier } from "../interface/EnergySupplier";
+import { ISupplier } from "../interface/ISupplier";
+import { IConsumer } from "../interface/IConsumer";
+import { IEnergySupplier } from "../interface/IEnergySupplier";
 
 export class Carrier extends BaseCreep {
 
     public static BODY_PART = [CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE];
 
-    private mSupplierList: Supplier[] = [];
-    private mConsumerList: Consumer[] = [];
+    private mSupplierList: ISupplier[] = [];
+    private mConsumerList: IConsumer[] = [];
 
     constructor(creep: Creep, roomManager: RoomManager) {
         super(creep, roomManager);
@@ -20,7 +20,7 @@ export class Carrier extends BaseCreep {
     operate() {
         super.operate();
         if (this.mStatus == BaseCreep.STATUS_WORK) {
-            this.carry();
+            this.carryWork();
         }
     }
 
@@ -28,17 +28,17 @@ export class Carrier extends BaseCreep {
         this.mStatus = BaseCreep.STATUS_WORK;
     }
 
-    setSupplierList(supplierList: Supplier[]) {
+    setSupplierList(supplierList: ISupplier[]) {
         this.mSupplierList = supplierList;
     }
 
-    setConsumerList(consumerList: Consumer[]) {
+    setConsumerList(consumerList: IConsumer[]) {
         this.mConsumerList = consumerList
     }
 
-    carry() {
-        this.mCreep.say("carry");
-        if (this.mCreep.store.getFreeCapacity() > 0) {
+    carryWork() {
+        this.say("carry")
+        if (this.getFreeCapacity() > 0) {
             this.findResource();
         } else {
             this.backToStorage();
@@ -47,16 +47,15 @@ export class Carrier extends BaseCreep {
 
     private findResource() {
         let target;
-        let maxEnergySupplier: Supplier
+        let maxEnergySupplier: IEnergySupplier
         this.mSupplierList.forEach((supplier) => {
-            if (supplier instanceof EnergySupplier) {
+            if (supplier instanceof MSource) {
                 if (!maxEnergySupplier) {
                     maxEnergySupplier = supplier
                 }
-                if (supplier.getEnergySupplyCount() > maxEnergySupplier.getSupplyCount()) {
-                    if (supplier instanceof MSource) {
-                        target = supplier.getMContainer()!!.getContainer()
-                    }
+                if (supplier.getEnergyReadyCount() > maxEnergySupplier.getEnergyReadyCount()) {
+                    maxEnergySupplier = supplier
+                    target = supplier.getMContainer()!!.getContainer()
                 }
             }
         })
@@ -66,16 +65,25 @@ export class Carrier extends BaseCreep {
     }
 
     private backToStorage() {
-        let targets = this.mCreep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
-                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+
+        let maxPriority = 0;
+        this.mConsumerList.forEach((consumer) => {
+            if (consumer.priority > 0) {
+                maxPriority = consumer.priority
             }
-        });
-        if (targets.length > 0) {
-            if (this.mCreep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                this.mCreep.moveTo(targets[0], { visualizePathStyle: { stroke: "#ffffff" } });
-            }
-        }
+        })
+
+
+        // let targets = this.mCreep.room.find(FIND_STRUCTURES, {
+        //     filter: (structure) => {
+        //         return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
+        //             structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+        //     }
+        // });
+        // if (targets.length > 0) {
+        //     if (this.mCreep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        //         this.mCreep.moveTo(targets[0], { visualizePathStyle: { stroke: "#ffffff" } });
+        //     }
+        // }
     }
 }

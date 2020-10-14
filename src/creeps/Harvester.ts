@@ -16,7 +16,7 @@ export class Harvester extends BaseCreep {
     operate() {
         super.operate();
         if (this.mStatus == BaseCreep.STATUS_WORK) {
-            this.work();
+            this.harvestWork();
         }
     }
 
@@ -28,9 +28,9 @@ export class Harvester extends BaseCreep {
         this.mStatus = BaseCreep.STATUS_WORK;
     }
 
-    work() {
-        this.mCreep.say("harvest");
-        if (this.mCreep.store.getFreeCapacity() > 0) {
+    harvestWork() {
+        this.say("harvest")
+        if (this.getFreeCapacity() > 0) {
             this.goMine();
         } else {
             this.backToStorage();
