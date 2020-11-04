@@ -17,33 +17,53 @@ export class RoomManager {
 
     constructor(room: Room, time: number) {
         this.mRoom = room;
-        this.initSource();
+        this.initStructure();
         this.initCreeps(time);
-        this.initSpawn();
     }
 
     public setStatusWork() {
         this.mStatus = RoomManager.STATUS_WORK;
     }
 
+    public initStructure() {
+        this.initSource();
+        this.initSpawn();
+    }
+
     private initSpawn() {
-        let spawns: StructureSpawn[] = this.mRoom.find(FIND_MY_SPAWNS);
+        var spawns: StructureSpawn[] = [];
+        if (this.mRoom.memory.spawns == null || this.mRoom.memory.spawns == []) {
+            spawns = this.mRoom.find(FIND_MY_SPAWNS);
+            let spawnList: Id<StructureSpawn>[] = [];
+            spawns.forEach((spawn) => {
+                spawnList.push(spawn.id);
+            });
+            this.mRoom.memory.spawns = spawnList;
+        } else {
+            let spawnList = this.mRoom.memory.spawns;
+            spawnList.forEach((id) => {
+                let spawn = Game.getObjectById(id);
+                if (spawn) {
+                    spawns.push(spawn);
+                }
+            });
+        }
         spawns.forEach((spawn) => {
-            this.mSpawns.push(new MSpawn(spawn));
+            this.mSpawns.push(new MSpawn(spawn, this));
         });
     }
 
     private initSource() {
         var sources: Source[] = [];
-        if (this.mRoom.memory.resources == null || this.mRoom.memory.resources == []) {
+        if (this.mRoom.memory.sources == null || this.mRoom.memory.sources == []) {
             sources = this.mRoom.find(FIND_SOURCES);
             let sourceList: Id<Source>[] = [];
             sources.forEach((source) => {
                 sourceList.push(source.id);
             });
-            this.mRoom.memory.resources = sourceList;
+            this.mRoom.memory.sources = sourceList;
         } else {
-            let sourceList = this.mRoom.memory.resources;
+            let sourceList = this.mRoom.memory.sources;
             sourceList.forEach((id) => {
                 let source = Game.getObjectById(id);
                 if (source) {
@@ -86,8 +106,12 @@ export class RoomManager {
 
     }
 
-    public getMSpawn(): MSpawn[]{
-        return this.mSpawns
+    public getMSpawn(): MSpawn[] {
+        return this.mSpawns;
+    }
+
+    public getRoom(): Room {
+        return this.mRoom;
     }
 
     public operate() {

@@ -21,7 +21,7 @@ export abstract class BaseCreep {
     }
 
     protected say(msg: string) {
-        this.mCreep.say(msg)
+        this.mCreep.say(msg);
     }
 
     protected transfer(target: AnyCreep | Structure, resourceType: ResourceConstant, amount?: number) {
@@ -42,7 +42,33 @@ export abstract class BaseCreep {
         }
     }
 
+    protected build(target: ConstructionSite) {
+        if (this.mCreep.build(target) == ERR_NOT_IN_RANGE) {
+            this.mCreep.moveTo(target);
+        }
+    }
+
     protected getFreeCapacity() {
-        return this.mCreep.store.getFreeCapacity()
+        return this.mCreep.store.getFreeCapacity();
+    }
+
+    protected static getBodyPart(energyCapacity: number, parts: BodyPartConstant[], minimumSize: number = 3): BodyPartConstant[] {
+        let maxParts: BodyPartConstant[] = [];
+        let needEnergy = 0;
+        for (let i = 0; i < parts.length; i++) {
+            let part: BodyPartConstant = parts[i];
+            maxParts.push(parts[i]);
+            let partNext: BodyPartConstant;
+            if (i + 1 < parts.length) {
+                partNext = parts[i + 1];
+            } else {
+                break;
+            }
+            needEnergy += BODYPART_COST[part];
+            if (needEnergy + BODYPART_COST[partNext] > energyCapacity) {
+                break;
+            }
+        }
+        return maxParts;
     }
 }

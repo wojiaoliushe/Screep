@@ -5,7 +5,7 @@ import { MSpawn } from "../structures/MSpawn";
 
 export class Harvester extends BaseCreep {
 
-    public static BODY_PART = [WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE];
+    public static BODY_PART = [WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE];
 
     private mWorkTarget: MSource | undefined;
 
@@ -50,15 +50,18 @@ export class Harvester extends BaseCreep {
             return;
         }
         let container = this.mWorkTarget.getMContainer()?.getContainer();
-        if (!container) { //没有container就送到spawn
-            let targets = this.mRoomManager.getMSpawn();
-            for (let target of targets) {
-                let capacity = target.getFreeCapacity();
-                if (capacity != null && capacity > 0) {
-                    this.transfer(target.getSpawn(), RESOURCE_ENERGY)
-                    break;
-                }
-            }
+        if (!container) {
+            // let targets = this.mRoomManager.getMSpawn(); //没有container就送到spawn
+            // for (let target of targets) {
+            //     let capacity = target.getFreeCapacity();
+            //     if (capacity != null && capacity > 0) {
+            //         this.transfer(target.getSpawn(), RESOURCE_ENERGY)
+            //         break;
+            //     }
+            // }
+
+
+
         } else {  //有container就送到container
             this.transfer(container, RESOURCE_ENERGY)
         }
@@ -68,7 +71,7 @@ export class Harvester extends BaseCreep {
         return name.startsWith("Harvester");
     }
 
-    public static getBodyPart(extensionCount: number): BodyPartConstant[] {
-        return Harvester.BODY_PART.slice(0, extensionCount + 3);
+    public static getBodyPart(energyCapacity: number): BodyPartConstant[] {
+        return super.getBodyPart(energyCapacity, Harvester.BODY_PART, 3);
     }
 }

@@ -1,17 +1,25 @@
 import { MContainer } from "../structures/MContainer";
 import { ISupplier } from "../interface/ISupplier";
 import { IEnergySupplier } from "../interface/IEnergySupplier";
+import { RoomManager } from "../managers/RoomManager";
 
 export class MSource implements IEnergySupplier{
     private mSource: Source;
     private mContainer: MContainer | undefined;
+    // private mRoomManager: RoomManager
 
     constructor(source: Source) {
         this.mSource = source;
-    }
+        // this.mRoomManager = roomManager;
 
-    public setMContainer(container: MContainer) {
-        this.mContainer = container;
+        // Memory.spawns
+        // let containerId = this.mRoomManager.getRoom().memory.sourceContainers.get(this.mSource.id)
+        // if (containerId) {
+        //     let container = Game.getObjectById<StructureContainer>(containerId)
+        //     if (container) {
+        //         this.mContainer = new MContainer(container)
+        //     }
+        // }
     }
 
     public isHasContainer() {

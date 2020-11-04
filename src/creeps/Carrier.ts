@@ -5,13 +5,14 @@ import construct = Reflect.construct;
 import { ISupplier } from "../interface/ISupplier";
 import { IConsumer } from "../interface/IConsumer";
 import { IEnergySupplier } from "../interface/IEnergySupplier";
+import { MSpawn } from "../structures/MSpawn";
 
 export class Carrier extends BaseCreep {
 
-    public static BODY_PART = [CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE];
+    public static BODY_PART = [CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE];
 
     private mSupplierList: ISupplier[] = [];
-    private mConsumerList: IConsumer[] = [];
+    private mConsumeTarget: IConsumer | undefined;
 
     constructor(creep: Creep, roomManager: RoomManager) {
         super(creep, roomManager);
@@ -32,12 +33,12 @@ export class Carrier extends BaseCreep {
         this.mSupplierList = supplierList;
     }
 
-    setConsumerList(consumerList: IConsumer[]) {
-        this.mConsumerList = consumerList
+    setConsumeTarget(consumer: IConsumer) {
+        this.mConsumeTarget = consumer;
     }
 
     carryWork() {
-        this.say("carry")
+        this.say("carry");
         if (this.getFreeCapacity() > 0) {
             this.findResource();
         } else {
@@ -47,43 +48,30 @@ export class Carrier extends BaseCreep {
 
     private findResource() {
         let target;
-        let maxEnergySupplier: IEnergySupplier
+        let maxEnergySupplier: IEnergySupplier;
         this.mSupplierList.forEach((supplier) => {
             if (supplier instanceof MSource) {
                 if (!maxEnergySupplier) {
-                    maxEnergySupplier = supplier
+                    maxEnergySupplier = supplier;
                 }
                 if (supplier.getEnergyReadyCount() > maxEnergySupplier.getEnergyReadyCount()) {
-                    maxEnergySupplier = supplier
-                    target = supplier.getMContainer()!!.getContainer()
+                    maxEnergySupplier = supplier;
+                    target = supplier.getMContainer()!!.getContainer();
                 }
             }
-        })
+        });
         if (target != undefined) {
-            this.withdraw(target, RESOURCE_ENERGY)
+            this.withdraw(target, RESOURCE_ENERGY);
         }
     }
 
     private backToStorage() {
+        if (this.mConsumeTarget instanceof MSpawn) {
+            this.transfer(this.mConsumeTarget.getSpawn(), RESOURCE_ENERGY);
+        }
+    }
 
-        let maxPriority = 0;
-        this.mConsumerList.forEach((consumer) => {
-            if (consumer.priority > 0) {
-                maxPriority = consumer.priority
-            }
-        })
-
-
-        // let targets = this.mCreep.room.find(FIND_STRUCTURES, {
-        //     filter: (structure) => {
-        //         return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
-        //             structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-        //     }
-        // });
-        // if (targets.length > 0) {
-        //     if (this.mCreep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-        //         this.mCreep.moveTo(targets[0], { visualizePathStyle: { stroke: "#ffffff" } });
-        //     }
-        // }
+    public static getBodyPart(energyCapacity: number): BodyPartConstant[] {
+        return super.getBodyPart(energyCapacity, Carrier.BODY_PART, 2);
     }
 }

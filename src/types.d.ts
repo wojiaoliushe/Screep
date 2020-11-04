@@ -3,12 +3,19 @@
 // memory extension samples
 interface CreepMemory {
   role: string;
-  room: string;
-  working: boolean;
 }
 
 interface RoomMemory {
-  resources: Id<Source>[];
+  sources: Id<Source>[];
+  sourceContainers: Map<Id<Source>, Id<StructureContainer>>
+  spawns: Id<StructureSpawn>[];
+  creeps: Id<Creep>[];
+}
+
+interface SourceMemory {
+  sources: Id<Source>[];
+  sourceContainers: Map<Id<Source>, Id<StructureContainer>>
+  spawns: Id<StructureSpawn>[];
   creeps: Id<Creep>[];
 }
 
